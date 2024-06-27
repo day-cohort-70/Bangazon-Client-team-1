@@ -14,6 +14,8 @@ export function Detail({ product, like, unlike }) {
   const addToCart = () => {
     addProductToOrder(product.id).then(() => {
       router.push('/cart')
+    }).catch(err => {
+      console.error('Error adding product to cart:', err)
     })
   }
 
