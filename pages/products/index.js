@@ -1,43 +1,45 @@
 // pages/products/index.js
-import { useEffect, useState } from 'react';
-import Filter from '../../components/filter';
-import Layout from '../../components/layout';
-import Navbar from '../../components/navbar';
-import { ProductCard } from '../../components/product/card';
-import { getProducts } from '../../data/products';
+import { useEffect, useState } from 'react'
+import Filter from '../../components/filter'
+import Layout from '../../components/layout'
+import Navbar from '../../components/navbar'
+import { ProductCard } from '../../components/product/card'
+import { getProducts } from '../../data/products'
 
 export default function Products() {
-  const [products, setProducts] = useState({});
-  const [filteredProducts, setFilteredProducts] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [loadingMessage, setLoadingMessage] = useState('Loading products...');
-  const [locations, setLocations] = useState([]);
+  const [products, setProducts] = useState({})
+  const [filteredProducts, setFilteredProducts] = useState(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [loadingMessage, setLoadingMessage] = useState('Loading products...')
+  const [locations, setLocations] = useState([])
 
   useEffect(() => {
     getProducts()
       .then(data => {
-        console.log('Fetched products data:', data);
-
+        
+        //If the data contains products categorized by category, set the products state.
         if (Array.isArray(data.filtered_products)) {
-          setFilteredProducts(data.filtered_products);
-        } else if (data.products_by_category) {
-          setProducts(data.products_by_category);
-          const allProducts = Object.values(data.products_by_category).flat();
-          const locationData = [...new Set(allProducts.map(product => product.location))];
+          setFilteredProducts(data.filtered_products)
+        } 
+        //If the data contains filtered products, set the filteredProducts State
+        else if (data.products_by_category) {
+          setProducts(data.products_by_category)
+          //
+          const allProducts = Object.values(data.products_by_category).flat()
+          const locationData = [...new Set(allProducts.map(product => product.location))]
           const locationObjects = locationData.map(location => ({
             id: location,
             name: location,
-          }));
+          }))
 
-          setIsLoading(false);
-          setLocations(locationObjects);
+          setIsLoading(false)
+          setLocations(locationObjects)
         }
       })
       .catch(err => {
         setLoadingMessage(`Unable to retrieve products. Status code ${err.message} on response.`);
-      });
-  }, []);
-
+      })
+  }, [])
   const searchProducts = query => {
     getProducts(query)
       .then(productsData => {
@@ -49,8 +51,9 @@ export default function Products() {
         setLoadingMessage(`Unable to retrieve products. Status code ${err.message} on response.`);
       });
   };
-
-  if (isLoading) return <p className="has-text-centered has-text-danger">{loadingMessage}</p>;
+  
+  //Displays loading message while fetching products
+  if (isLoading) return <p className="has-text-centered has-text-danger">{loadingMessage}</p>
 
   return (
     <>
@@ -62,9 +65,12 @@ export default function Products() {
 
       <div className="columns is-multiline">
         {filteredProducts ? (
-          filteredProducts.map(product => (
-            <ProductCard key={product.id} product={product} />
-          ))
+          <>
+            <h2 className="subtitle column is-12">Products matching filters</h2> {/* Add this line */}
+            {filteredProducts.map(product => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </>
         ) : (
           Object.keys(products).map(category => (
             <div key={category} className="column is-12">
@@ -83,7 +89,7 @@ export default function Products() {
         )}
       </div>
     </>
-  );
+  )
 }
 
 Products.getLayout = function getLayout(page) {
@@ -92,7 +98,7 @@ Products.getLayout = function getLayout(page) {
       <Navbar />
       {page}
     </Layout>
-  );
-};
+  )
+}
 
 
