@@ -1,16 +1,15 @@
-import { useEffect, useState } from 'react'
-import Filter from '../../components/filter'
-import Layout from '../../components/layout'
-import Navbar from '../../components/navbar'
-import { ProductCard } from '../../components/product/card'
-import { getProducts } from '../../data/products'
+import { useEffect, useState } from 'react';
+import Filter from '../../components/filter';
+import Layout from '../../components/layout';
+import Navbar from '../../components/navbar';
+import { ProductCard } from '../../components/product/card';
+import { getProducts } from '../../data/products';
 
 export default function Products() {
-  const [products, setProducts] = useState({})
-  //State to store filtered products when a filter is applied
-  const [filteredProducts, setFilteredProducts] = useState(null)
+  const [products, setProducts] = useState({});
+  const [filteredProducts, setFilteredProducts] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [loadingMessage, setLoadingMessage] = useState('Loading products...')
+  const [loadingMessage, setLoadingMessage] = useState('Loading products...');
   const [locations, setLocations] = useState([]);
 
   useEffect(() => {
@@ -19,12 +18,9 @@ export default function Products() {
         const data = await getProducts();
 
         if (Array.isArray(data)) {
-          //If data is an array,it means filtered products are returned.
           setFilteredProducts(data);
         } else if (data && data.products_by_category) {
-          //if data contains products_by_category,set the products by category
-          setProducts(data.products_by_category)
-
+          setProducts(data.products_by_category);
 
           const allProducts = Object.values(data.products_by_category).flat();
           const uniqueLocations = [...new Set(allProducts.map(product => product.location))];
@@ -38,7 +34,7 @@ export default function Products() {
           throw new Error("Unexpected data structure");
         }
       } catch (err) {
-        setLoadingMessage(`Unable to retrieve products. Status code ${err.message} on response.`)
+        setLoadingMessage(`Unable to retrieve products. Status code ${err.message} on response.`);
       } finally {
         setIsLoading(false);
       }
@@ -50,18 +46,31 @@ export default function Products() {
   const searchProducts = async query => {
     try {
       const productsData = await getProducts(query);
-      setFilteredProducts(Array.isArray(productsData) ? productsData : [])
+      setFilteredProducts(Array.isArray(productsData) ? productsData : []);
     } catch (err) {
-      setLoadingMessage(`Unable to retrieve products. Status code ${err.message} on response.`)
+      setLoadingMessage(`Unable to retrieve products. Status code ${err.message} on response.`);
     }
-  }
+  };
 
-  if (isLoading) return <p className="has-text-centered has-text-danger">{loadingMessage}</p>
+  if (isLoading) return <p className="has-text-centered has-text-danger">{loadingMessage}</p>;
+
+  const productCount = filteredProducts ? filteredProducts.length : Object.values(products).flat().length;
 
   return (
     <>
+      <div className="level">
+        <div className="level-left">
+          <p className="subtitle is-5">
+            <strong>{productCount}</strong> Products
+          </p>
+        </div>
+        <div className="level-right">
+          {/* Filter button and other controls can go here */}
+        </div>
+      </div>
+
       <Filter
-        productCount={filteredProducts ? filteredProducts.length : Object.values(products).flat().length}
+        productCount={productCount}
         onSearch={searchProducts}
         locations={locations}
       />
@@ -75,7 +84,6 @@ export default function Products() {
             ))}
           </>
         ) : (
-          //Render product by category when no filters applied.
           Object.keys(products).map(category => (
             <div key={category} className="column is-12">
               <h2 className="subtitle">{category}</h2>
@@ -93,7 +101,7 @@ export default function Products() {
         )}
       </div>
     </>
-  )
+  );
 }
 
 Products.getLayout = function getLayout(page) {
@@ -102,8 +110,9 @@ Products.getLayout = function getLayout(page) {
       <Navbar />
       {page}
     </Layout>
-  )
-}
+  );
+};
+
 
 
 
