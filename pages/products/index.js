@@ -1,60 +1,60 @@
-import { useEffect, useState } from 'react';
-import Filter from '../../components/filter';
-import Layout from '../../components/layout';
-import Navbar from '../../components/navbar';
-import { ProductCard } from '../../components/product/card';
-import { getProducts } from '../../data/products';
+import { useEffect, useState } from 'react'
+import Filter from '../../components/filter'
+import Layout from '../../components/layout'
+import Navbar from '../../components/navbar'
+import { ProductCard } from '../../components/product/card'
+import { getProducts } from '../../data/products'
 
 export default function Products() {
-  const [products, setProducts] = useState({});
-  const [filteredProducts, setFilteredProducts] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [loadingMessage, setLoadingMessage] = useState('Loading products...');
-  const [locations, setLocations] = useState([]);
+  const [products, setProducts] = useState({})
+  const [filteredProducts, setFilteredProducts] = useState(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [loadingMessage, setLoadingMessage] = useState('Loading products...')
+  const [locations, setLocations] = useState([])
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const data = await getProducts();
+        const data = await getProducts()
 
         if (Array.isArray(data)) {
           setFilteredProducts(data);
         } else if (data && data.products_by_category) {
-          setProducts(data.products_by_category);
+          setProducts(data.products_by_category)
 
-          const allProducts = Object.values(data.products_by_category).flat();
-          const uniqueLocations = [...new Set(allProducts.map(product => product.location))];
+          const allProducts = Object.values(data.products_by_category).flat()
+          const uniqueLocations = [...new Set(allProducts.map(product => product.location))]
           const locationObjects = uniqueLocations.map(location => ({
             id: location,
             name: location,
           }));
 
-          setLocations(locationObjects);
+          setLocations(locationObjects)
         } else {
-          throw new Error("Unexpected data structure");
+          throw new Error("Unexpected data structure")
         }
       } catch (err) {
-        setLoadingMessage(`Unable to retrieve products. Status code ${err.message} on response.`);
+        setLoadingMessage(`Unable to retrieve products. Status code ${err.message} on response.`)
       } finally {
-        setIsLoading(false);
+        setIsLoading(false)
       }
-    };
+    }
 
     fetchProducts();
-  }, []);
+  }, [])
 
   const searchProducts = async query => {
     try {
-      const productsData = await getProducts(query);
-      setFilteredProducts(Array.isArray(productsData) ? productsData : []);
+      const productsData = await getProducts(query)
+      setFilteredProducts(Array.isArray(productsData) ? productsData : [])
     } catch (err) {
-      setLoadingMessage(`Unable to retrieve products. Status code ${err.message} on response.`);
+      setLoadingMessage(`Unable to retrieve products. Status code ${err.message} on response.`)
     }
   };
 
-  if (isLoading) return <p className="has-text-centered has-text-danger">{loadingMessage}</p>;
+  if (isLoading) return <p className="has-text-centered has-text-danger">{loadingMessage}</p>
 
-  const productCount = filteredProducts ? filteredProducts.length : Object.values(products).flat().length;
+  const productCount = filteredProducts ? filteredProducts.length : Object.values(products).flat().length
 
   return (
     <>
@@ -65,7 +65,7 @@ export default function Products() {
           </p>
         </div>
         <div className="level-right">
-          {/* Filter button and other controls can go here */}
+          
         </div>
       </div>
 
@@ -101,7 +101,7 @@ export default function Products() {
         )}
       </div>
     </>
-  );
+  )
 }
 
 Products.getLayout = function getLayout(page) {
