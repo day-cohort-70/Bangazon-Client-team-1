@@ -1,4 +1,3 @@
-// pages/products/index.js
 import { useEffect, useState } from 'react'
 import Filter from '../../components/filter'
 import Layout from '../../components/layout'
@@ -24,10 +23,15 @@ export default function Products() {
         //If the data contains filtered products, set the filteredProducts State
         else if (data.products_by_category) {
           setProducts(data.products_by_category)
-          //
+          //combines all products from different categories in to a single list
           const allProducts = Object.values(data.products_by_category).flat()
+
+          //extracts unique locations from this list
           const locationData = [...new Set(allProducts.map(product => product.location))]
+          
+          //creates an array of objects where each object represents a unique location
           const locationObjects = locationData.map(location => ({
+
             id: location,
             name: location,
           }))
@@ -37,20 +41,20 @@ export default function Products() {
         }
       })
       .catch(err => {
-        setLoadingMessage(`Unable to retrieve products. Status code ${err.message} on response.`);
+        setLoadingMessage(`Unable to retrieve products. Status code ${err.message} on response.`)
       })
   }, [])
   const searchProducts = query => {
     getProducts(query)
       .then(productsData => {
         if (productsData) {
-          setFilteredProducts(productsData.filtered_products);
+          setFilteredProducts(productsData.filtered_products)
         }
       })
       .catch(err => {
-        setLoadingMessage(`Unable to retrieve products. Status code ${err.message} on response.`);
-      });
-  };
+        setLoadingMessage(`Unable to retrieve products. Status code ${err.message} on response.`)
+      })
+  }
   
   //Displays loading message while fetching products
   if (isLoading) return <p className="has-text-centered has-text-danger">{loadingMessage}</p>
@@ -66,7 +70,7 @@ export default function Products() {
       <div className="columns is-multiline">
         {filteredProducts ? (
           <>
-            <h2 className="subtitle column is-12">Products matching filters</h2> {/* Add this line */}
+            <h2 className="subtitle column is-12">Products matching filters</h2> 
             {filteredProducts.map(product => (
               <ProductCard key={product.id} product={product} />
             ))}
