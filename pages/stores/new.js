@@ -21,10 +21,11 @@ export default function NewStore() {
       setProfile({
         ...profile,
         store: res
-      })
-      router.push(`/stores/${res.id}`)
-    })
-  }
+      });
+      router.push(`/stores/${res.id}`);
+    });
+  };
+  
 
   return (
     <StoreForm nameEl={nameEl} descriptionEl={descriptionEl} saveEvent={saveStore} router={router} title="Create your store">
